@@ -4,13 +4,24 @@ from  math import hypot
 
 class KNN:
     """ K近傍法のためのノードを集めた集合
-        add: ノードの追加
-        cluster: 指定したノードのクラスタの番号を取得
-        dataList: 指定したクラスタのノードのリストを取得
+        add(): ノードの追加
+        cluster(): 指定したノードのクラスタの番号を取得
+        dataList(): 指定したクラスタのノードのリストを取得
+        dict(): 保持しているデータとそのクラスタを辞書型のデータ構造にまとめる
     """
 
-    def __init__(self):
-        self.nodes = []
+    def __init__(self, json=None):
+        """ ノードリストの初期化
+            json文字列が引数で渡された場合は, そのデータでノードリストを初期化する
+            json文字列が渡されなかった場合は, ノードリストは空のリストとする
+            :param str json: jsonの文字列
+        """
+        if json is None:
+            self.nodes = []
+
+        # TODO 実装
+        else:
+            self.nodes = []
 
     def add(self, value, k=3, cluster=None):
         """ ノードの追加
@@ -53,9 +64,17 @@ class KNN:
 
         return list
 
+    def dict(self):
+        """ 保持しているデータとそのクラスタを辞書型のデータ構造にまとめる
+        :return: 辞書データ
+        :rtype:dict{"node":["data":data, "cluster":cluster]}
+        """
+        # TODO 実装
+        pass
+
     def _search(self, value):
         """ 指定された値のノードを探索する
-            O(n)
+            O(n) ただし、nはこれまでに学習したデータ量
             :param value: ノードの値
             :return: ノードが見つかった場合はそのノード、見つからなければNone
             :rtype: tuple of (value, cluster) or None
@@ -74,6 +93,7 @@ class KNN:
             :return: ノードが含まれるクラスタ
             :rtype: cluster
         """
+        #TODO 探索の計算量を減らす  (近似最近傍探索を使う？)
         dists = []
         for node in self.nodes:
             dx = node[0][0] - value[0]

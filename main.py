@@ -8,7 +8,8 @@ def main():
     for i in range(len(values)):
         knn.add(value=values[i], cluster=clusters[i])
 
-    print(knn.add(value=(2, 1), k=5))
+    print(knn.add(value=(2, 1), k=5))  # red
+    print(knn.add(value=(5, 5), k=3))  # blue
 
 
 if __name__ == '__main__':
