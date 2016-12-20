@@ -4,7 +4,7 @@ from KNN import KNN
 
 
 def main():
-    with open("test1.json") as read_file:
+    with open("sample1.json") as read_file:
         knn = KNN(json.load(read_file))
 
     while True:
