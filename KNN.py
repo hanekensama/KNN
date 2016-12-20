@@ -1,25 +1,24 @@
 from collections import Counter, defaultdict
 from math import hypot
 
+import simplejson as json
+
+
 class KNN:
     """ K近傍法のためのノードを集めた集合
         add(): ノードの追加
         cluster(): 指定したノードのクラスタの番号を取得
         dataList(): 指定したクラスタのノードのリストを取得
         clusterList(): 存在するクラスタのリストを取得
+        read(): jsonファイルを読み込み，ノードを設定
+        write(): jsonファイルに書き込み
+        plot(): 2次元グラフで表示 (未実装)
     """
 
-    def __init__(self, nodes=None):
+    def __init__(self):
         """ ノードリストの初期化
-            辞書が引数で渡された場合は, そのデータでノードリストを初期化する
-            :param str nodes: クラスタをkey, 値をvalueとする辞書
         """
         self.nodes = defaultdict(list)
-
-        # ディープコピー
-        if nodes is not None:
-            for item in nodes.items():
-                self.nodes[item[0]] = item[1]
 
 
     def add(self, value, k=3, cluster=None):
@@ -68,6 +67,30 @@ class KNN:
         :return: クラスタのリスト
         """
         return self.nodes.keys()
+
+    def read(self, filename):
+        """
+        jsonファイルを読み込み
+        :param filename: 読み込むファイルのファイル名
+        :return: なし
+        """
+        # 初期化
+        self.nodes = defaultdict(list)
+
+        # 読み込み, ディープコピー
+        with open(filename, "r") as file:
+            data = json.load(file)
+            for d in data.items():
+                self.nodes[d[0]] = d[1]
+
+    def write(self, filename):
+        """
+        jsonファイルに書き込み
+        :param filename: 書き込み先ファイルのファイル名
+        :return: なし
+        """
+        with open(filename, "w") as file:
+            json.dump(self.nodes, file, sort_keys=True, indent=2)
 
     def _checkCluster(self, value, k):
         """ 指定された値のノードのクラスタをユークリッド距離によるk近傍法にて求める
