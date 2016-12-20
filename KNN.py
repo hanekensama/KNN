@@ -11,14 +11,12 @@ class KNN:
 
     def __init__(self, nodes=None):
         """ ノードリストの初期化
-            json文字列が引数で渡された場合は, そのデータでノードリストを初期化する
-            json文字列が渡されなかった場合は, ノードリストは空のリストとする
+            辞書が引数で渡された場合は, そのデータでノードリストを初期化する
             :param str nodes: クラスタをkey, 値をvalueとする辞書
         """
         self.nodes = defaultdict(list)
 
         # ディープコピー
-        # TODO もっと賢いやり方に直す
         if nodes is not None:
             for item in nodes.items():
                 self.nodes[item[0]] = item[1]
