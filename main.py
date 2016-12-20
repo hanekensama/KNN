@@ -5,10 +5,12 @@ def main():
     knn.read("sample1.json")
 
     while True:
-        func = int(input("[1]add [2]check [3]disp [0]exit :"))
+        func = int(input("[1]add [2]check [3]disp [4]plot [0]exit :"))
 
         if func == 0:
-            if input("save current nodes? (y/n) :") == "y" or "Y":
+
+            save = input("save current nodes? (y/n) :")
+            if save == "y" or "Y":
                 knn.write(input("file name :"))
             break
 
@@ -23,6 +25,13 @@ def main():
 
         elif func == 3:
             print(knn.nodes)
+
+        elif func == 4:
+            colors = {}
+            for cluster in knn.clusterList():
+                color = input("colors for {0} :".format(cluster))
+                colors[cluster] = color
+            knn.plot(colors)
 
         else:
             print("Error! : illegal input")

@@ -2,6 +2,7 @@ from collections import Counter, defaultdict
 from math import hypot
 
 import simplejson as json
+from matplotlib import pyplot
 
 
 class KNN:
@@ -12,7 +13,7 @@ class KNN:
         clusterList(): 存在するクラスタのリストを取得
         read(): jsonファイルを読み込み，ノードを設定
         write(): jsonファイルに書き込み
-        plot(): 2次元グラフで表示 (未実装)
+        plot(): 2次元グラフで表示
     """
 
     def __init__(self):
@@ -92,6 +93,29 @@ class KNN:
         with open(filename, "w") as file:
             json.dump(self.nodes, file, sort_keys=True, indent=2)
 
+    def plot(self, colors=None):
+        """
+        2次元グラフで表示（データの次元が2次元以下の場合のみ）
+        :param colors: 各クラスタの色情報を持つ辞書データ {cluster:color}
+        :return: なし
+        """
+        fig = pyplot.figure()
+        ax = fig.add_subplot(1, 1, 1)
+
+        for key in self.nodes.keys():
+            x, y = [], []
+            for i in self.nodes[key]:
+                x.append(i[0])
+                y.append(i[1])
+
+            if key in colors:
+                ax.scatter(x, y, c=colors[key], marker="o", label=key, s=40)
+            else:
+                ax.scatter(x, y, c="black", marker="o", label=key, s=40)
+
+        # TODO 応答なしになる問題の解決
+        fig.show()
+
     def _checkCluster(self, value, k):
         """ 指定された値のノードのクラスタをユークリッド距離によるk近傍法にて求める
             O(n) ただし、nはこれまでに学習したデータ量
@@ -99,7 +123,7 @@ class KNN:
             :return: ノードが含まれるクラスタ
             :rtype: cluster
         """
-        #TODO 探索の計算量を減らす  (近似最近傍探索を使う？)
+        #TODO 探索の計算量を減らす  (近似最近傍探索を応用？)
         dists = []
         for key in self.nodes.keys():
             for node in self.nodes[key]:
