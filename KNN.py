@@ -1,27 +1,28 @@
-from collections import Counter
-from  math import hypot
-
+from collections import Counter, defaultdict
+from math import hypot
 
 class KNN:
     """ K近傍法のためのノードを集めた集合
         add(): ノードの追加
         cluster(): 指定したノードのクラスタの番号を取得
         dataList(): 指定したクラスタのノードのリストを取得
-        dict(): 保持しているデータとそのクラスタを辞書型のデータ構造にまとめる
+        clusterList(): 存在するクラスタのリストを取得
     """
 
-    def __init__(self, json=None):
+    def __init__(self, nodes=None):
         """ ノードリストの初期化
             json文字列が引数で渡された場合は, そのデータでノードリストを初期化する
             json文字列が渡されなかった場合は, ノードリストは空のリストとする
-            :param str json: jsonの文字列
+            :param str nodes: クラスタをkey, 値をvalueとする辞書
         """
-        if json is None:
-            self.nodes = []
+        self.nodes = defaultdict(list)
 
-        # TODO 実装
-        else:
-            self.nodes = []
+        # ディープコピー
+        # TODO もっと賢いやり方に直す
+        if nodes is not None:
+            for item in nodes.items():
+                self.nodes[item[0]] = item[1]
+
 
     def add(self, value, k=3, cluster=None):
         """ ノードの追加
@@ -35,17 +36,19 @@ class KNN:
         if cluster is None:
             cluster = self._checkCluster(value, k)
 
-        self.nodes.append((value, cluster))
+        self.nodes[cluster].append(value)
         return cluster
 
     def cluster(self, value, k=3):
         """ 指定したノードのクラスタを調べる
+            O(n) nは保持しているデータの数
             :param value: ノードの値
             :param int k: k近傍で用いるkの値
             :return: クラスタの識別子
         """
-        if value in self.nodes:
-            return self._search(value)[1]
+        for key in self.nodes.keys():
+            if value in self.nodes[key]:
+                return key
 
         else:
             return self._checkCluster(value, k)
@@ -56,35 +59,17 @@ class KNN:
             :return: ノードのリスト
             :rtype: list of [Node.value, ... ]
         """
-        list = []
+        if cluster in self.nodes:
+            return self.nodes[cluster]
+        else:
+            return None
 
-        for node in self.nodes:
-            if node[1] == cluster:
-                list.append(node[0])
-
-        return list
-
-    def dict(self):
-        """ 保持しているデータとそのクラスタを辞書型のデータ構造にまとめる
-        :return: 辞書データ
-        :rtype:dict{"node":["data":data, "cluster":cluster]}
+    def clusterList(self):
         """
-        # TODO 実装
-        pass
-
-    def _search(self, value):
-        """ 指定された値のノードを探索する
-            O(n) ただし、nはこれまでに学習したデータ量
-            :param value: ノードの値
-            :return: ノードが見つかった場合はそのノード、見つからなければNone
-            :rtype: tuple of (value, cluster) or None
+        クラスタのリストを取得
+        :return: クラスタのリスト
         """
-        # TODO 探索の計算量を減らす.
-        for node in self.nodes:
-            if node[0] == value:
-                return node
-
-        return None
+        return self.nodes.keys()
 
     def _checkCluster(self, value, k):
         """ 指定された値のノードのクラスタをユークリッド距離によるk近傍法にて求める
@@ -95,10 +80,11 @@ class KNN:
         """
         #TODO 探索の計算量を減らす  (近似最近傍探索を使う？)
         dists = []
-        for node in self.nodes:
-            dx = node[0][0] - value[0]
-            dy = node[0][1] - value[1]
-            dists.append((hypot(dx, dy), node[1]))
+        for key in self.nodes.keys():
+            for node in self.nodes[key]:
+                dx = node[0] - value[0]
+                dy = node[1] - value[1]
+                dists.append((hypot(dx, dy), key))
 
         dists.sort()
         counter = Counter()
